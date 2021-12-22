@@ -20,7 +20,11 @@ extern "C" {
 }
 #endif
 #include "lte/gateway/c/core/oai/common/common_defs.h"
+<<<<<<< HEAD
 #include "lte/gateway/c/core/oai/tasks/amf/include/amf_client_servicer.h"
+=======
+#include "include/amf_client_servicer.h"
+>>>>>>> test(amf): stateless unit test
 #include "lte/gateway/c/core/oai/tasks/amf/amf_app_state_manager.h"
 #include "lte/gateway/c/core/oai/include/map.h"
 
@@ -102,7 +106,10 @@ int AmfNasStateManager::initialize_state(const amf_config_t* amf_config_p) {
 
   // Allocate the local AMF state and create respective single object
   create_state();
+<<<<<<< HEAD
 // TODO: This is a temporary check and will be removed in upcoming PR
+=======
+>>>>>>> test(amf): stateless unit test
 #if MME_UNIT_TEST
   read_state_from_db();
 #endif
@@ -154,9 +161,17 @@ void AmfNasStateManager::amf_nas_state_init_local_state() {
  */
 amf_app_desc_t* AmfNasStateManager::get_state(bool read_from_redis) {
   state_dirty = true;
+<<<<<<< HEAD
   if (persist_state_enabled && read_from_redis) {
     read_state_from_db();
   }
+=======
+#if MME_UNIT_TEST
+  if (persist_state_enabled && read_from_redis) {
+    read_state_from_db();
+  }
+#endif
+>>>>>>> test(amf): stateless unit test
   return state_cache_p;
 }
 
@@ -169,10 +184,17 @@ status_code_e AmfNasStateManager::read_state_from_db() {
   StateManager::read_state_from_db();
 #else
   if (persist_state_enabled) {
+<<<<<<< HEAD
     MmeNasState state_proto = MmeNasState();
     std::string proto_str;
     // Reads from the AmfClientServicer DataStore Map(map_table_key_proto_str)
     if (AMFClientServicer::getInstance().map_table_key_proto_str.get(
+=======
+    magma::lte::oai::MmeNasState state_proto = magma::lte::oai::MmeNasState();
+    std::string proto_str;
+    // Reads from the AmfClientServicer DataStore Map(map_tableKey_protoStr)
+    if (AMFClientServicer::getInstance().map_tableKey_protoStr.get(
+>>>>>>> test(amf): stateless unit test
             table_key, &proto_str) != magma::MAP_OK) {
       OAILOG_DEBUG(LOG_MME_APP, "Failed to read proto from db \n");
       return RETURNerror;
@@ -192,14 +214,23 @@ void AmfNasStateManager::write_state_to_db() {
   StateManager::write_state_to_db();
 #else
   if (persist_state_enabled) {
+<<<<<<< HEAD
     MmeNasState state_proto = MmeNasState();
+=======
+    magma::lte::oai::MmeNasState state_proto = magma::lte::oai::MmeNasState();
+>>>>>>> test(amf): stateless unit test
     AmfNasStateConverter::state_to_proto(state_cache_p, &state_proto);
     std::string proto_str;
     redis_client->serialize(state_proto, proto_str);
     std::size_t new_hash = std::hash<std::string>{}(proto_str);
     if (new_hash != this->task_state_hash) {
+<<<<<<< HEAD
       // Writes to the AmfClientServicer DataStore Map(map_table_key_proto_str)
       if (AMFClientServicer::getInstance().map_table_key_proto_str.insert(
+=======
+      // Writes to the AmfClientServicer DataStore Map(map_tableKey_protoStr)
+      if (AMFClientServicer::getInstance().map_tableKey_protoStr.insert(
+>>>>>>> test(amf): stateless unit test
               table_key, proto_str) != magma::MAP_OK) {
         OAILOG_ERROR(log_task, "Failed to write state to db");
         return;
