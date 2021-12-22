@@ -290,6 +290,10 @@ message EmmSecurityContext {
   bytes next_hop = 14;
   uint32 next_hop_chaining_count = 15;
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> feat(amf): Serialization and Deserialization of Smf Context
   // 5G protos
   bytes kamf = 21;
   bytes kgnb = 22;
@@ -545,7 +549,6 @@ message EmmContext {
   NewAttachInfo new_attach_info = 67;
   UeAdditionalSecurityCapability ue_additional_security_capability = 68;
   // TODO: add remaining emm_context elements
-
   // 5G Guti
   Guti_m5 m5_guti = 91;
   Guti_m5 m5_old_guti = 92;

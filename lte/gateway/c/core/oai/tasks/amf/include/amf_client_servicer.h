@@ -87,11 +87,7 @@ class AMFClientServicer : public AMFClientServicerBase {
   AMFClientServicer(AMFClientServicer const&) = delete;
   void operator=(AMFClientServicer const&) = delete;
 
-<<<<<<< HEAD
   magma::map_string_string_t map_table_key_proto_str;
-=======
-  map_string_string_t map_tableKey_protoStr;
->>>>>>> test(amf): stateless unit test
 
 #if MME_UNIT_TEST
   status_code_e amf_send_msg_to_task(
