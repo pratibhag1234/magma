@@ -142,6 +142,17 @@ class AmfNasStateConverter : public magma::lte::StateConverter {
       const EmmSecurityContext& emm_security_context_proto,
       amf_security_context_t* state_amf_security_context);
 
+  static void smf_context_map_to_proto(
+      const std::unordered_map<uint8_t, std::shared_ptr<smf_context_t>>
+          smf_ctxt_map,
+      google::protobuf::Map<uint32_t, magma::lte::oai::SmfContext>* proto_map);
+
+  static void proto_to_smf_context_map(
+      const google::protobuf::Map<uint32_t, magma::lte::oai::SmfContext>&
+          proto_map,
+      std::unordered_map<uint8_t, std::shared_ptr<smf_context_t>>*
+          smf_ctxt_map);
+
   /***********************************************************
    *                 Map <-> Proto
    * Functions to serialize/deserialize in-memory maps
