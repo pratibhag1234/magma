@@ -32,6 +32,26 @@ namespace magma5g {
 AmfNasStateConverter::AmfNasStateConverter()  = default;
 AmfNasStateConverter::~AmfNasStateConverter() = default;
 
+void AmfNasStateConverter::plmn_to_chars(
+    const plmn_t& state_plmn, char* plmn_array) {
+  plmn_array[0] = (char) (state_plmn.mcc_digit1 + ASCII_ZERO);
+  plmn_array[1] = (char) (state_plmn.mcc_digit2 + ASCII_ZERO);
+  plmn_array[2] = (char) (state_plmn.mcc_digit3 + ASCII_ZERO);
+  plmn_array[3] = (char) (state_plmn.mnc_digit1 + ASCII_ZERO);
+  plmn_array[4] = (char) (state_plmn.mnc_digit2 + ASCII_ZERO);
+  plmn_array[5] = (char) (state_plmn.mnc_digit3 + ASCII_ZERO);
+}
+
+void AmfNasStateConverter::chars_to_plmn(
+    const char* plmn_array, plmn_t* state_plmn) {
+  state_plmn->mcc_digit1 = static_cast<int>(plmn_array[0]) - ASCII_ZERO;
+  state_plmn->mcc_digit2 = static_cast<int>(plmn_array[1]) - ASCII_ZERO;
+  state_plmn->mcc_digit3 = static_cast<int>(plmn_array[2]) - ASCII_ZERO;
+  state_plmn->mnc_digit1 = static_cast<int>(plmn_array[3]) - ASCII_ZERO;
+  state_plmn->mnc_digit2 = static_cast<int>(plmn_array[4]) - ASCII_ZERO;
+  state_plmn->mnc_digit3 = static_cast<int>(plmn_array[5]) - ASCII_ZERO;
+}
+
 // HelperFunction: Converts guti_m5_t to std::string
 std::string AmfNasStateConverter::amf_app_convert_guti_m5_to_string(
     const guti_m5_t& guti) {
@@ -203,6 +223,7 @@ void AmfNasStateConverter::proto_to_ue(
 void AmfNasStateConverter::ue_m5gmm_context_to_proto(
     const ue_m5gmm_context_t* state_ue_m5gmm_context,
     magma::lte::oai::UeContext* ue_context_proto) {
+  ue_context_proto->set_amf_ue_ngap_id(state_ue_m5gmm_context->amf_ue_ngap_id);
   ue_context_proto->set_rel_cause(
       state_ue_m5gmm_context->ue_context_rel_cause.present);
   ue_context_proto->set_mm_state(state_ue_m5gmm_context->mm_state);
@@ -232,6 +253,7 @@ void AmfNasStateConverter::ue_m5gmm_context_to_proto(
 void AmfNasStateConverter::proto_to_ue_m5gmm_context(
     const magma::lte::oai::UeContext& ue_context_proto,
     ue_m5gmm_context_t* state_ue_m5gmm_context) {
+  state_ue_m5gmm_context->amf_ue_ngap_id = ue_context_proto.amf_ue_ngap_id();
   state_ue_m5gmm_context->ue_context_rel_cause.present =
       static_cast<ngap_Cause_PR>(ue_context_proto.rel_cause());
   state_ue_m5gmm_context->mm_state =
@@ -308,7 +330,26 @@ void AmfNasStateConverter::proto_to_tai(
       LOG_MME_APP, "State PLMN " PLMN_FMT "from proto",
       PLMN_ARG(&state_tai->plmn));
 }
-
+void AmfNasStateConverter::guti_m5_to_proto(
+    const guti_m5_t& state_guti_m5, magma::lte::oai::Guti_m5* guti_m5_proto) {
+  guti_m5_proto->Clear();
+  char plmn_array[PLMN_BYTES];
+  AmfNasStateConverter::plmn_to_chars(state_guti_m5.guamfi.plmn, plmn_array);
+  guti_m5_proto->set_plmn(plmn_array);
+  guti_m5_proto->set_amf_regionid(state_guti_m5.guamfi.amf_regionid);
+  guti_m5_proto->set_amf_set_id(state_guti_m5.guamfi.amf_set_id);
+  guti_m5_proto->set_amf_pointer(state_guti_m5.guamfi.amf_pointer);
+  guti_m5_proto->set_m_tmsi(state_guti_m5.m_tmsi);
+}
+void AmfNasStateConverter::proto_to_guti_m5(
+    const magma::lte::oai::Guti_m5& guti_m5_proto, guti_m5_t* state_guti_m5) {
+  AmfNasStateConverter::chars_to_plmn(
+      guti_m5_proto.plmn().c_str(), &state_guti_m5->guamfi.plmn);
+  state_guti_m5->guamfi.amf_regionid = guti_m5_proto.amf_regionid();
+  state_guti_m5->guamfi.amf_set_id   = guti_m5_proto.amf_set_id();
+  state_guti_m5->guamfi.amf_pointer  = guti_m5_proto.amf_pointer();
+  state_guti_m5->m_tmsi              = (tmsi_t) guti_m5_proto.m_tmsi();
+}
 void AmfNasStateConverter::amf_context_to_proto(
     const amf_context_t* amf_ctx, EmmContext* emm_context_proto) {
   emm_context_proto->set_imsi64(amf_ctx->imsi64);
@@ -339,6 +380,10 @@ void AmfNasStateConverter::amf_context_to_proto(
   emm_context_proto->set_ksi(amf_ctx->ksi);
   AmfNasStateConverter::smf_context_map_to_proto(
       amf_ctx->smf_ctxt_map, emm_context_proto->mutable_smf_context_m());
+  AmfNasStateConverter::guti_m5_to_proto(
+      amf_ctx->m5_guti, emm_context_proto->mutable_m5_guti());
+  AmfNasStateConverter::guti_m5_to_proto(
+      amf_ctx->m5_old_guti, emm_context_proto->mutable_m5_old_guti());
 }
 
 void AmfNasStateConverter::proto_to_amf_context(
@@ -369,6 +414,10 @@ void AmfNasStateConverter::proto_to_amf_context(
   amf_ctx->ksi = emm_context_proto.ksi();
   AmfNasStateConverter::proto_to_smf_context_map(
       emm_context_proto.smf_context_m(), &amf_ctx->smf_ctxt_map);
+  AmfNasStateConverter::proto_to_guti_m5(
+      emm_context_proto.m5_guti(), &amf_ctx->m5_guti);
+  AmfNasStateConverter::proto_to_guti_m5(
+      emm_context_proto.m5_old_guti(), &amf_ctx->m5_old_guti);
 }
 void AmfNasStateConverter::amf_security_context_to_proto(
     const amf_security_context_t* state_amf_security_context,

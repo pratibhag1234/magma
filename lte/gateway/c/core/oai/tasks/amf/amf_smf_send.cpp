@@ -266,7 +266,7 @@ int t3592_abort_handler(
   int rc                               = RETURNerror;
   amf_smf_t amf_smf_msg                = {};
   amf_smf_msg.pdu_session_id           = pdu_session_id;
-  amf_smf_msg.u.release.pti            = smf_ctx->smf_proc_data.pti.pti;
+  amf_smf_msg.u.release.pti            = smf_ctx->smf_proc_data.pti;
   amf_smf_msg.u.release.pdu_session_id = pdu_session_id;
   amf_smf_msg.u.release.cause_value    = SMF_CAUSE_SUCCESS;
   rc = pdu_session_resource_release_complete(ue_context, amf_smf_msg, smf_ctx);
