@@ -166,6 +166,9 @@ void NgapStateConverter::proto_to_ue(
   ue->sctp_stream_send               = proto.sctp_stream_send();
   ue->ngap_ue_context_rel_timer.id   = proto.s1ap_ue_context_rel_timer().id();
   ue->ngap_ue_context_rel_timer.msec = proto.s1ap_ue_context_rel_timer().msec();
+
+  ue->comp_ngap_id =
+      ngap_get_comp_ngap_id(ue->sctp_assoc_id, ue->gnb_ue_ngap_id);
 }
 
 void NgapStateConverter::ngap_imsi_map_to_proto(
