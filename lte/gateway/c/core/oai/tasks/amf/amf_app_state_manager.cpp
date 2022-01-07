@@ -50,6 +50,7 @@ amf_app_desc_t* get_amf_nas_state(bool read_from_redis) {
  * a thread safe call
  */
 void put_amf_nas_state() {
+  OAILOG_DEBUG(LOG_AMF_APP, "put_amf_nas_state for stateless \n");
   magma5g::AmfNasStateManager::getInstance().write_state_to_db();
 }
 
@@ -108,12 +109,14 @@ int AmfNasStateManager::initialize_state(const amf_config_t* amf_config_p) {
 
   // Allocate the local AMF state and create respective single object
   create_state();
-// TODO: This is a temporary check and will be removed in upcoming PR
-#if MME_UNIT_TEST
+#if !MME_UNIT_TEST
+  OAILOG_DEBUG(LOG_AMF_APP, "MME_UNIT_TEST Flag is Disabled");
+  redis_client =
+      std::make_unique<magma::lte::RedisClient>(persist_state_enabled);
+#endif
   read_state_from_db();
   read_ue_state_from_db();
   amf_sync_app_maps_from_db();
-#endif
   is_initialized = true;
   return rc;
 }
@@ -214,6 +217,8 @@ void put_amf_ue_state(
       if ((ue_context_p && force_ue_write) ||
           (ue_context_p && ue_context_p->mm_state == REGISTERED_CONNECTED)) {
         auto imsi_str = AmfNasStateManager::getInstance().get_imsi_str(imsi64);
+        OAILOG_DEBUG(
+            LOG_AMF_APP, "put_amf_ue_state for stateless :[%s]\n", imsi_str);
         AmfNasStateManager::getInstance().write_ue_state_to_db(
             ue_context_p, imsi_str);
       }
