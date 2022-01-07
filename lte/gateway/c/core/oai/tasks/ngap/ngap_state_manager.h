@@ -35,6 +35,7 @@ extern "C" {
 #include "lte/gateway/c/core/oai/common/common_defs.h"
 #include "lte/gateway/c/core/oai/include/state_manager.h"
 #include "lte/gateway/c/core/oai/tasks/ngap/ngap_state_converter.h"
+#include "lte/gateway/c/core/oai/tasks/ngap/include/ngap_client_servicer.h"
 using namespace magma::lte;
 using namespace magma::lte::oai;
 
@@ -82,6 +83,8 @@ class NgapStateManager
   NgapStateManager(NgapStateManager const&) = delete;
   NgapStateManager& operator=(NgapStateManager const&) = delete;
 
+  status_code_e read_state_from_db() override;
+  void write_state_to_db() override;
   /**
    * Frees all memory allocated on ngap_state cache struct
    */
@@ -92,7 +95,9 @@ class NgapStateManager
    * @return operation response code
    */
   status_code_e read_ue_state_from_db() override;
-
+  void write_ue_state_to_db(
+      const m5g_ue_description_t* ue_context,
+      const std::string& imsi_str) override;
   /**
    * Serializes ngap_imsi_map to proto and saves it into data store
    */
