@@ -290,10 +290,6 @@ message EmmSecurityContext {
   bytes next_hop = 14;
   uint32 next_hop_chaining_count = 15;
 
-<<<<<<< HEAD
-=======
-
->>>>>>> feat(amf): Serialization and Deserialization of Smf Context
   // 5G protos
   bytes kamf = 21;
   bytes kgnb = 22;

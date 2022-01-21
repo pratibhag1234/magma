@@ -379,7 +379,8 @@ void AmfNasStateConverter::amf_context_to_proto(
       &amf_ctx->originating_tai, emm_context_proto->mutable_originating_tai());
   emm_context_proto->set_ksi(amf_ctx->ksi);
   AmfNasStateConverter::smf_context_map_to_proto(
-      amf_ctx->smf_ctxt_map, emm_context_proto->mutable_smf_context_m());
+      amf_ctx->smf_ctxt_map,
+      emm_context_proto->mutable_pdu_session_id_smf_context_map());
   AmfNasStateConverter::guti_m5_to_proto(
       amf_ctx->m5_guti, emm_context_proto->mutable_m5_guti());
   AmfNasStateConverter::guti_m5_to_proto(
@@ -413,7 +414,8 @@ void AmfNasStateConverter::proto_to_amf_context(
   proto_to_tai(emm_context_proto.originating_tai(), &amf_ctx->originating_tai);
   amf_ctx->ksi = emm_context_proto.ksi();
   AmfNasStateConverter::proto_to_smf_context_map(
-      emm_context_proto.smf_context_m(), &amf_ctx->smf_ctxt_map);
+      emm_context_proto.pdu_session_id_smf_context_map(),
+      &amf_ctx->smf_ctxt_map);
   AmfNasStateConverter::proto_to_guti_m5(
       emm_context_proto.m5_guti(), &amf_ctx->m5_guti);
   AmfNasStateConverter::proto_to_guti_m5(
@@ -512,7 +514,8 @@ void AmfNasStateConverter::smf_proc_data_to_proto(
   smf_proc_data_proto->set_max_uplink(state_smf_proc_data->max_uplink);
   smf_proc_data_proto->set_max_downlink(state_smf_proc_data->max_downlink);
   smf_proc_data_proto->set_pdu_session_type(
-      state_smf_proc_data->pdu_session_type);
+      (magma::lte::oai::M5GPduSessionType)
+          state_smf_proc_data->pdu_session_type);
   smf_proc_data_proto->set_ssc_mode(state_smf_proc_data->ssc_mode);
 }
 void AmfNasStateConverter::proto_to_smf_proc_data(
