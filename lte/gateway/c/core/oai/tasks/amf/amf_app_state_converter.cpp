@@ -219,7 +219,7 @@ void AmfNasStateConverter::proto_to_ue(
  * Functions to serialize/desearialize UE context         *
  * The caller needs to acquire a lock on UE context       *
  **********************************************************/
-
+//ue_m5gmm_context to proto
 void AmfNasStateConverter::ue_m5gmm_context_to_proto(
     const ue_m5gmm_context_t* state_ue_m5gmm_context,
     magma::lte::oai::UeContext* ue_context_proto) {
@@ -249,7 +249,7 @@ void AmfNasStateConverter::ue_m5gmm_context_to_proto(
   ue_context_proto->set_paging_retx_count(
       state_ue_m5gmm_context->paging_context.paging_retx_count);
 }
-
+//proto to ue_m5gmm_context 
 void AmfNasStateConverter::proto_to_ue_m5gmm_context(
     const magma::lte::oai::UeContext& ue_context_proto,
     ue_m5gmm_context_t* state_ue_m5gmm_context) {
